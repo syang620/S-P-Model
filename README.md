@@ -1,0 +1,1 @@
+The project tries to create an equal-weight portfolo with S&P 500 stocks. The portfolio selects stocks with high quality and the highest momentum while keeping the same sector exposure as S&P500 index. 
