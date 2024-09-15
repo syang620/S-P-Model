@@ -6,7 +6,7 @@ import yfinance as yf
 import time
 
 from pyfmpcloud import settings
-settings.set_apikey('4f9b786b4b8d3c61fdd83d6a571ca4c6')
+settings.set_apikey([your api key])
 from pyfmpcloud import company_valuation as cv
 
 def get_sp_tickers():
@@ -39,7 +39,7 @@ def get_div_ts_data(period = '2y'):
     ticker_errors = []
     for t in tickers:
         try:
-            div_df = stock.tickers[t].history(period = period)[['Close', 'Dividends']]
+            div_df = stock.tickers[t].history(period = period)[['Close', 'Dividends']].dropna()
             div_df.columns = pd.MultiIndex.from_product([[t], div_df.columns])
     #         div_df['Ticker'] = t
             div_data.append(div_df)
