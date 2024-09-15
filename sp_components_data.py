@@ -19,7 +19,7 @@ def get_sp_data(start='2008-01-01', end=None):
     import pandas as pd
     import yfinance as yf
     # Get the current SP components, and get a tickers list
-    assets = get_sp_tickers
+    assets = get_sp_tickers()
     # Download historical data to a multi-index DataFrame
     try:
         data = yf.download(assets, start=start, end=end)
@@ -31,6 +31,30 @@ def get_sp_data(start='2008-01-01', end=None):
         data = None
     return data
 
+def get_div_ts_data(period = '2y'):
+    tickers = get_sp_tickers()
+    all_ticker = ' '.join(tickers)
+    stock = yf.Tickers(all_ticker)
+    div_data = []
+    ticker_errors = []
+    for t in tickers:
+        try:
+            div_df = stock.tickers[t].history(period = period)[['Close', 'Dividends']]
+            div_df.columns = pd.MultiIndex.from_product([[t], div_df.columns])
+    #         div_df['Ticker'] = t
+            div_data.append(div_df)
+        except:
+            ticker_errors.append(t)
+    try:
+        df = pd.concat(div_data)
+        filename = 'sp_div_ts_data.pkl'
+        df.to_pickle(filename)
+        print('Data saved at {}'.format(filename))
+    except ValueError:
+        print('Failed download, try again.')
+        df = None
+    return df
+    
 def sp_ticker_data():
     assets = get_sp_tickers
     ticker_info_lst = list(map(lambda t: yf.Ticker(t).info, assets))
@@ -60,7 +84,7 @@ def sp_ticker_data():
     return df
 
 def sp_rating_data():
-    assets = get_sp_tickers
+    assets = get_sp_tickers()
     buckets = np.array_split(assets, 100)
     l = []
     for b in buckets:
